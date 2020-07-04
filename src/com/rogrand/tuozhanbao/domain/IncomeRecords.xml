@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+收益记录
+User: Created by auto build
+Date: 2018-09-22 16:03:55
+-->
+<sqlMap namespace="ape_income_records">
+
+    <typeAlias alias="ape_income_records" type="com.rogrand.tuozhanbao.domain.IncomeRecords" />
+
+    <!--收益记录分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--用户ID等于-->
+            <isNotEmpty prepend="and" property="user_id">
+                <![CDATA[ t1.user_id = #user_id# ]]>
+            </isNotEmpty>
+            <!--用户ID_name-->
+            <isNotEmpty prepend="and" property="user_id_display">
+                <![CDATA[ instr(t2.phone, #user_id_display#) > 0 ]]>
+            </isNotEmpty>
+            <!--商户id等于-->
+            <isNotEmpty prepend="and" property="merchant_id">
+                <![CDATA[ t1.merchant_id = #merchant_id# ]]>
+            </isNotEmpty>
+            <!--商户id_name-->
+            <isNotEmpty prepend="and" property="merchant_id_display">
+                <![CDATA[ instr(t3.phone, #merchant_id_display#) > 0 ]]>
+            </isNotEmpty>
+            <!--订单号-->
+            <isNotEmpty prepend="and" property="order_no">
+                <![CDATA[ instr(t1.order_no, #order_no#) > 0 ]]>
+            </isNotEmpty>
+            <!--收益类型-->
+            <isNotEmpty prepend="and" property="type">
+                <![CDATA[ instr(t1.type, #type#) > 0 ]]>
+            </isNotEmpty>
+            <!--收益金额最小值-->
+            <isNotEmpty prepend="and" property="amount_min">
+                <![CDATA[ t1.amount >= #amount_min# ]]>
+            </isNotEmpty>
+            <!--收益金额等于-->
+            <isNotEmpty prepend="and" property="amount">
+                <![CDATA[ t1.amount = #amount# ]]>
+            </isNotEmpty>
+            <!--收益金额最大值-->
+            <isNotEmpty prepend="and" property="amount_max">
+                <![CDATA[ t1.amount <= #amount_max# ]]>
+            </isNotEmpty>
+            <!--原始金额最小值-->
+            <isNotEmpty prepend="and" property="pristine_amount_min">
+                <![CDATA[ t1.pristine_amount >= #pristine_amount_min# ]]>
+            </isNotEmpty>
+            <!--原始金额等于-->
+            <isNotEmpty prepend="and" property="pristine_amount">
+                <![CDATA[ t1.pristine_amount = #pristine_amount# ]]>
+            </isNotEmpty>
+            <!--原始金额最大值-->
+            <isNotEmpty prepend="and" property="pristine_amount_max">
+                <![CDATA[ t1.pristine_amount <= #pristine_amount_max# ]]>
+            </isNotEmpty>
+            <!--剩余金额最小值-->
+            <isNotEmpty prepend="and" property="surplus_amount_min">
+                <![CDATA[ t1.surplus_amount >= #surplus_amount_min# ]]>
+            </isNotEmpty>
+            <!--剩余金额等于-->
+            <isNotEmpty prepend="and" property="surplus_amount">
+                <![CDATA[ t1.surplus_amount = #surplus_amount# ]]>
+            </isNotEmpty>
+            <!--剩余金额最大值-->
+            <isNotEmpty prepend="and" property="surplus_amount_max">
+                <![CDATA[ t1.surplus_amount <= #surplus_amount_max# ]]>
+            </isNotEmpty>
+            <!--状态-->
+            <isNotEmpty prepend="and" property="state">
+                <![CDATA[ instr(t1.state, #state#) > 0 ]]>
+            </isNotEmpty>
+            <!--备注-->
+            <isNotEmpty prepend="and" property="descp">
+                <![CDATA[ instr(t1.descp, #descp#) > 0 ]]>
+            </isNotEmpty>
+            <!--创建时间开始-->
+            <isNotEmpty prepend="and" property="create_time_begin">
+                <![CDATA[ t1.create_time >= str_to_date(#create_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--创建时间结束-->
+            <isNotEmpty prepend="and" property="create_time_end">
+                <![CDATA[ t1.create_time <= str_to_date('$create_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--收益记录分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total
+            from ape_income_records t1
+            left join ape_user_info t2 on t1.user_id = t2.id
+            left join ape_merchant t3 on t1.merchant_id = t3.id
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--收益记录分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_income_records">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.user_id,
+                t2.phone user_id_display,
+                t1.merchant_id,
+                t3.phone merchant_id_display,
+                t1.order_no,
+                t1.type,
+                t1.amount,
+                t1.pristine_amount,
+                t1.surplus_amount,
+                t1.state,
+                t1.descp,
+                t1.create_time
+            from ape_income_records t1
+            left join ape_user_info t2 on t1.user_id = t2.id
+            left join ape_merchant t3 on t1.merchant_id = t3.id
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建收益记录-->
+    <insert id="create" parameterClass="ape_income_records">
+        <![CDATA[
+            insert into ape_income_records(
+                user_id,
+                merchant_id,
+                order_no,
+                type,
+                amount,
+                pristine_amount,
+                surplus_amount,
+                state,
+                descp,
+                create_time
+            ) values (
+                #user_id:NUMERIC#,
+                #merchant_id:NUMERIC#,
+                #order_no:VARCHAR#,
+                #type:VARCHAR#,
+                #amount:NUMERIC#,
+                #pristine_amount:NUMERIC#,
+                #surplus_amount:NUMERIC#,
+                #state:VARCHAR#,
+                #descp:VARCHAR#,
+                #create_time:TIMESTAMP#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建收益记录-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_income_records(
+                user_id,
+                merchant_id,
+                order_no,
+                type,
+                amount,
+                pristine_amount,
+                surplus_amount,
+                state,
+                descp,
+                create_time
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].user_id:NUMERIC#,
+                    #[].merchant_id:NUMERIC#,
+                    #[].order_no:VARCHAR#,
+                    #[].type:VARCHAR#,
+                    #[].amount:NUMERIC#,
+                    #[].pristine_amount:NUMERIC#,
+                    #[].surplus_amount:NUMERIC#,
+                    #[].state:VARCHAR#,
+                    #[].descp:VARCHAR#,
+                    #[].create_time:TIMESTAMP#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新收益记录-->
+    <update id="update" parameterClass="ape_income_records">
+        <![CDATA[ update ape_income_records ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.user_id">
+                <![CDATA[ user_id=#user_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.merchant_id">
+                <![CDATA[ merchant_id=#merchant_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.order_no">
+                <![CDATA[ order_no=#order_no:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.type">
+                <![CDATA[ type=#type:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.amount">
+                <![CDATA[ amount=#amount:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.pristine_amount">
+                <![CDATA[ pristine_amount=#pristine_amount:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.surplus_amount">
+                <![CDATA[ surplus_amount=#surplus_amount:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.state">
+                <![CDATA[ state=#state:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.descp">
+                <![CDATA[ descp=#descp:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.create_time">
+                <![CDATA[ create_time=#create_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除收益记录-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_income_records where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>

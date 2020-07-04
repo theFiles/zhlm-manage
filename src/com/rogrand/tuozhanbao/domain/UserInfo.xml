@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+用户
+User: Created by auto build
+Date: 2018-09-22 16:03:55
+-->
+<sqlMap namespace="ape_user_info">
+
+    <typeAlias alias="ape_user_info" type="com.rogrand.tuozhanbao.domain.UserInfo" />
+
+    <!--用户分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--手机号-->
+            <isNotEmpty prepend="and" property="phone">
+                <![CDATA[ instr(t1.phone, #phone#) > 0 ]]>
+            </isNotEmpty>
+            <!--登录密码-->
+            <isNotEmpty prepend="and" property="login_pwd">
+                <![CDATA[ instr(t1.login_pwd, #login_pwd#) > 0 ]]>
+            </isNotEmpty>
+            <!--推荐人ID等于-->
+            <isNotEmpty prepend="and" property="recommon_id">
+                <![CDATA[ t1.recommon_id = #recommon_id# ]]>
+            </isNotEmpty>
+            <!--推荐人ID_name-->
+            <isNotEmpty prepend="and" property="recommon_id_display">
+                <![CDATA[ instr(t2.real_name, #recommon_id_display#) > 0 ]]>
+            </isNotEmpty>
+            <!--编码-->
+            <isNotEmpty prepend="and" property="number">
+                <![CDATA[ instr(t1.number, #number#) > 0 ]]>
+            </isNotEmpty>
+            <!--推荐码-->
+            <isNotEmpty prepend="and" property="recommon_number">
+                <![CDATA[ instr(t1.recommon_number, #recommon_number#) > 0 ]]>
+            </isNotEmpty>
+            <!--用户类型-->
+            <isNotEmpty prepend="and" property="user_type">
+                <![CDATA[ instr(t1.user_type, #user_type#) > 0 ]]>
+            </isNotEmpty>
+            <!--昵称-->
+            <isNotEmpty prepend="and" property="nick_name">
+                <![CDATA[ instr(t1.nick_name, #nick_name#) > 0 ]]>
+            </isNotEmpty>
+            <!--真实姓名-->
+            <isNotEmpty prepend="and" property="real_name">
+                <![CDATA[ instr(t1.real_name, #real_name#) > 0 ]]>
+            </isNotEmpty>
+            <!--身份证号-->
+            <isNotEmpty prepend="and" property="id_card">
+                <![CDATA[ instr(t1.id_card, #id_card#) > 0 ]]>
+            </isNotEmpty>
+            <!--是否实名-->
+            <isNotEmpty prepend="and" property="authenticated">
+                <![CDATA[ instr(t1.authenticated, #authenticated#) > 0 ]]>
+            </isNotEmpty>
+            <!--是否绑定微信-->
+            <isNotEmpty prepend="and" property="if_wx_register">
+                <![CDATA[ instr(t1.if_wx_register, #if_wx_register#) > 0 ]]>
+            </isNotEmpty>
+            <!--微信号-->
+            <isNotEmpty prepend="and" property="wx_no">
+                <![CDATA[ instr(t1.wx_no, #wx_no#) > 0 ]]>
+            </isNotEmpty>
+            <!--微信二维码地址-->
+            <isNotEmpty prepend="and" property="wx_qrcode">
+                <![CDATA[ instr(t1.wx_qrcode, #wx_qrcode#) > 0 ]]>
+            </isNotEmpty>
+            <!--个推cid-->
+            <isNotEmpty prepend="and" property="gt_cid">
+                <![CDATA[ instr(t1.gt_cid, #gt_cid#) > 0 ]]>
+            </isNotEmpty>
+            <!--账户余额最小值-->
+            <isNotEmpty prepend="and" property="account_balance_min">
+                <![CDATA[ t1.account_balance >= #account_balance_min# ]]>
+            </isNotEmpty>
+            <!--账户余额等于-->
+            <isNotEmpty prepend="and" property="account_balance">
+                <![CDATA[ t1.account_balance = #account_balance# ]]>
+            </isNotEmpty>
+            <!--账户余额最大值-->
+            <isNotEmpty prepend="and" property="account_balance_max">
+                <![CDATA[ t1.account_balance <= #account_balance_max# ]]>
+            </isNotEmpty>
+            <!--分润余额最小值-->
+            <isNotEmpty prepend="and" property="profit_balance_min">
+                <![CDATA[ t1.profit_balance >= #profit_balance_min# ]]>
+            </isNotEmpty>
+            <!--分润余额等于-->
+            <isNotEmpty prepend="and" property="profit_balance">
+                <![CDATA[ t1.profit_balance = #profit_balance# ]]>
+            </isNotEmpty>
+            <!--分润余额最大值-->
+            <isNotEmpty prepend="and" property="profit_balance_max">
+                <![CDATA[ t1.profit_balance <= #profit_balance_max# ]]>
+            </isNotEmpty>
+            <!--结算卡号-->
+            <isNotEmpty prepend="and" property="settle_card_no">
+                <![CDATA[ instr(t1.settle_card_no, #settle_card_no#) > 0 ]]>
+            </isNotEmpty>
+            <!--结算户名-->
+            <isNotEmpty prepend="and" property="settle_name">
+                <![CDATA[ instr(t1.settle_name, #settle_name#) > 0 ]]>
+            </isNotEmpty>
+            <!--开户银行-->
+            <isNotEmpty prepend="and" property="settle_bank">
+                <![CDATA[ instr(t1.settle_bank, #settle_bank#) > 0 ]]>
+            </isNotEmpty>
+            <!--开户省份-->
+            <isNotEmpty prepend="and" property="settle_province">
+                <![CDATA[ instr(t1.settle_province, #settle_province#) > 0 ]]>
+            </isNotEmpty>
+            <!--开户城市-->
+            <isNotEmpty prepend="and" property="settle_city">
+                <![CDATA[ instr(t1.settle_city, #settle_city#) > 0 ]]>
+            </isNotEmpty>
+            <!--开户网点-->
+            <isNotEmpty prepend="and" property="settle_branch_bank">
+                <![CDATA[ instr(t1.settle_branch_bank, #settle_branch_bank#) > 0 ]]>
+            </isNotEmpty>
+            <!--预留手机号-->
+            <isNotEmpty prepend="and" property="settle_phone">
+                <![CDATA[ instr(t1.settle_phone, #settle_phone#) > 0 ]]>
+            </isNotEmpty>
+            <!--头像-->
+            <isNotEmpty prepend="and" property="head_image">
+                <![CDATA[ instr(t1.head_image, #head_image#) > 0 ]]>
+            </isNotEmpty>
+            <!--隐私开关-->
+            <isNotEmpty prepend="and" property="privacy">
+                <![CDATA[ instr(t1.privacy, #privacy#) > 0 ]]>
+            </isNotEmpty>
+            <!--储蓄卡正面扫描-->
+            <isNotEmpty prepend="and" property="settle_card_z_scan">
+                <![CDATA[ instr(t1.settle_card_z_scan, #settle_card_z_scan#) > 0 ]]>
+            </isNotEmpty>
+            <!--储蓄卡反面扫描-->
+            <isNotEmpty prepend="and" property="settle_card_f_scan">
+                <![CDATA[ instr(t1.settle_card_f_scan, #settle_card_f_scan#) > 0 ]]>
+            </isNotEmpty>
+            <!--身份证正面照-->
+            <isNotEmpty prepend="and" property="id_card_z_image">
+                <![CDATA[ instr(t1.id_card_z_image, #id_card_z_image#) > 0 ]]>
+            </isNotEmpty>
+            <!--身份证反面照-->
+            <isNotEmpty prepend="and" property="id_card_f_image">
+                <![CDATA[ instr(t1.id_card_f_image, #id_card_f_image#) > 0 ]]>
+            </isNotEmpty>
+            <!--手持身份证照-->
+            <isNotEmpty prepend="and" property="hand_idcard_image">
+                <![CDATA[ instr(t1.hand_idcard_image, #hand_idcard_image#) > 0 ]]>
+            </isNotEmpty>
+            <!--信用卡正面照-->
+            <isNotEmpty prepend="and" property="credit_card_z_image">
+                <![CDATA[ instr(t1.credit_card_z_image, #credit_card_z_image#) > 0 ]]>
+            </isNotEmpty>
+            <!--手持信用卡照-->
+            <isNotEmpty prepend="and" property="hand_credit_image">
+                <![CDATA[ instr(t1.hand_credit_image, #hand_credit_image#) > 0 ]]>
+            </isNotEmpty>
+            <!--状态-->
+            <isNotEmpty prepend="and" property="state">
+                <![CDATA[ instr(t1.state, #state#) > 0 ]]>
+            </isNotEmpty>
+            <!--拒绝理由-->
+            <isNotEmpty prepend="and" property="reject_reason">
+                <![CDATA[ instr(t1.reject_reason, #reject_reason#) > 0 ]]>
+            </isNotEmpty>
+            <!--创建时间开始-->
+            <isNotEmpty prepend="and" property="create_time_begin">
+                <![CDATA[ t1.create_time >= str_to_date(#create_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--创建时间结束-->
+            <isNotEmpty prepend="and" property="create_time_end">
+                <![CDATA[ t1.create_time <= str_to_date('$create_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--奖励台数最小值-->
+            <isNotEmpty prepend="and" property="hortation_num_min">
+                <![CDATA[ t1.hortation_num >= #hortation_num_min# ]]>
+            </isNotEmpty>
+            <!--奖励台数等于-->
+            <isNotEmpty prepend="and" property="hortation_num">
+                <![CDATA[ t1.hortation_num = #hortation_num# ]]>
+            </isNotEmpty>
+            <!--奖励台数最大值-->
+            <isNotEmpty prepend="and" property="hortation_num_max">
+                <![CDATA[ t1.hortation_num <= #hortation_num_max# ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--用户分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_user_info t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--用户分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_user_info">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.phone,
+                t1.login_pwd,
+                t1.recommon_id,
+                t2.real_name recommon_id_display,
+                t1.number,
+                t1.recommon_number,
+                t1.user_type,
+                t1.grade,
+                t1.nick_name,
+                t1.real_name,
+                t1.id_card,
+                t1.authenticated,
+                t1.if_wx_register,
+                t1.wx_no,
+                t1.wx_qrcode,
+                t1.gt_cid,
+                t1.account_balance,
+                t1.profit_balance,
+                t1.settle_card_no,
+                t1.settle_name,
+                t1.settle_bank,
+                t1.settle_province,
+                t1.settle_city,
+                t1.settle_branch_bank,
+                t1.settle_phone,
+                t1.head_image,
+                t1.privacy,
+                t1.settle_card_z_scan,
+                t1.settle_card_f_scan,
+                t1.id_card_z_image,
+                t1.id_card_f_image,
+                t1.hand_idcard_image,
+                t1.credit_card_z_image,
+                t1.hand_credit_image,
+                t1.state,
+                t1.authority,
+                t1.reject_reason,
+                t1.create_time,
+                t1.hortation_num
+            from ape_user_info t1
+            left join ape_user_info t2 on t1.recommon_id = t2.id
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建用户-->
+    <insert id="create" parameterClass="ape_user_info">
+        <![CDATA[
+            insert into ape_user_info(
+                phone,
+                login_pwd,
+                recommon_id,
+                number,
+                recommon_number,
+                user_type,
+                grade,
+                nick_name,
+                real_name,
+                id_card,
+                authenticated,
+                if_wx_register,
+                wx_no,
+                wx_qrcode,
+                gt_cid,
+                account_balance,
+                profit_balance,
+                settle_card_no,
+                settle_name,
+                settle_bank,
+                settle_province,
+                settle_city,
+                settle_branch_bank,
+                settle_phone,
+                head_image,
+                privacy,
+                settle_card_z_scan,
+                settle_card_f_scan,
+                id_card_z_image,
+                id_card_f_image,
+                hand_idcard_image,
+                credit_card_z_image,
+                hand_credit_image,
+                state,
+                authority,
+                reject_reason,
+                create_time
+            ) values (
+                #phone:VARCHAR#,
+                #login_pwd:VARCHAR#,
+                #recommon_id:NUMERIC#,
+                #number:VARCHAR#,
+                #recommon_number:VARCHAR#,
+                #user_type:VARCHAR#,
+                #grade#,
+                #nick_name:VARCHAR#,
+                #real_name:VARCHAR#,
+                #id_card:VARCHAR#,
+                #authenticated:VARCHAR#,
+                #if_wx_register:VARCHAR#,
+                #wx_no:VARCHAR#,
+                #wx_qrcode:VARCHAR#,
+                #gt_cid:VARCHAR#,
+                #account_balance:NUMERIC#,
+                #profit_balance:NUMERIC#,
+                #settle_card_no:VARCHAR#,
+                #settle_name:VARCHAR#,
+                #settle_bank:VARCHAR#,
+                #settle_province:VARCHAR#,
+                #settle_city:VARCHAR#,
+                #settle_branch_bank:VARCHAR#,
+                #settle_phone:VARCHAR#,
+                #head_image:VARCHAR#,
+                #privacy:VARCHAR#,
+                #settle_card_z_scan:VARCHAR#,
+                #settle_card_f_scan:VARCHAR#,
+                #id_card_z_image:VARCHAR#,
+                #id_card_f_image:VARCHAR#,
+                #hand_idcard_image:VARCHAR#,
+                #credit_card_z_image:VARCHAR#,
+                #hand_credit_image:VARCHAR#,
+                #state:VARCHAR#,
+                #authority:TEXT#,
+                #reject_reason:VARCHAR#,
+                #create_time:TIMESTAMP#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建用户-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_user_info(
+                phone,
+                login_pwd,
+                recommon_id,
+                number,
+                recommon_number,
+                user_type,
+                grade,
+                nick_name,
+                real_name,
+                id_card,
+                authenticated,
+                if_wx_register,
+                wx_no,
+                wx_qrcode,
+                gt_cid,
+                account_balance,
+                profit_balance,
+                settle_card_no,
+                settle_name,
+                settle_bank,
+                settle_province,
+                settle_city,
+                settle_branch_bank,
+                settle_phone,
+                head_image,
+                privacy,
+                settle_card_z_scan,
+                settle_card_f_scan,
+                id_card_z_image,
+                id_card_f_image,
+                hand_idcard_image,
+                credit_card_z_image,
+                hand_credit_image,
+                state,
+                authority,
+                reject_reason,
+                create_time
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].phone:VARCHAR#,
+                    #[].login_pwd:VARCHAR#,
+                    #[].recommon_id:NUMERIC#,
+                    #[].number:VARCHAR#,
+                    #[].recommon_number:VARCHAR#,
+                    #[].user_type:VARCHAR#,
+                    #[].grade#,
+                    #[].nick_name:VARCHAR#,
+                    #[].real_name:VARCHAR#,
+                    #[].id_card:VARCHAR#,
+                    #[].authenticated:VARCHAR#,
+                    #[].if_wx_register:VARCHAR#,
+                    #[].wx_no:VARCHAR#,
+                    #[].wx_qrcode:VARCHAR#,
+                    #[].gt_cid:VARCHAR#,
+                    #[].account_balance:NUMERIC#,
+                    #[].profit_balance:NUMERIC#,
+                    #[].settle_card_no:VARCHAR#,
+                    #[].settle_name:VARCHAR#,
+                    #[].settle_bank:VARCHAR#,
+                    #[].settle_province:VARCHAR#,
+                    #[].settle_city:VARCHAR#,
+                    #[].settle_branch_bank:VARCHAR#,
+                    #[].settle_phone:VARCHAR#,
+                    #[].head_image:VARCHAR#,
+                    #[].privacy:VARCHAR#,
+                    #[].settle_card_z_scan:VARCHAR#,
+                    #[].settle_card_f_scan:VARCHAR#,
+                    #[].id_card_z_image:VARCHAR#,
+                    #[].id_card_f_image:VARCHAR#,
+                    #[].hand_idcard_image:VARCHAR#,
+                    #[].credit_card_z_image:VARCHAR#,
+                    #[].hand_credit_image:VARCHAR#,
+                    #[].state:VARCHAR#,
+                    #[].authority:TEXT#,
+                    #[].reject_reason:VARCHAR#,
+                    #[].create_time:TIMESTAMP#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新用户-->
+    <update id="update" parameterClass="ape_user_info">
+        <![CDATA[ update ape_user_info ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.phone">
+                <![CDATA[ phone=#phone:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.login_pwd">
+                <![CDATA[ login_pwd=#login_pwd:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.recommon_id">
+                <![CDATA[ recommon_id=#recommon_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.number">
+                <![CDATA[ number=#number:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.recommon_number">
+                <![CDATA[ recommon_number=#recommon_number:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.user_type">
+                <![CDATA[ user_type=#user_type:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.grade">
+                <![CDATA[ grade=#grade:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.nick_name">
+                <![CDATA[ nick_name=#nick_name:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.real_name">
+                <![CDATA[ real_name=#real_name:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.id_card">
+                <![CDATA[ id_card=#id_card:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.authenticated">
+                <![CDATA[ authenticated=#authenticated:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.if_wx_register">
+                <![CDATA[ if_wx_register=#if_wx_register:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.wx_no">
+                <![CDATA[ wx_no=#wx_no:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.wx_qrcode">
+                <![CDATA[ wx_qrcode=#wx_qrcode:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.gt_cid">
+                <![CDATA[ gt_cid=#gt_cid:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.account_balance">
+                <![CDATA[ account_balance=#account_balance:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.profit_balance">
+                <![CDATA[ profit_balance=#profit_balance:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.settle_card_no">
+                <![CDATA[ settle_card_no=#settle_card_no:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.settle_name">
+                <![CDATA[ settle_name=#settle_name:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.settle_bank">
+                <![CDATA[ settle_bank=#settle_bank:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.settle_province">
+                <![CDATA[ settle_province=#settle_province:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.settle_city">
+                <![CDATA[ settle_city=#settle_city:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.settle_branch_bank">
+                <![CDATA[ settle_branch_bank=#settle_branch_bank:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.settle_phone">
+                <![CDATA[ settle_phone=#settle_phone:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.head_image">
+                <![CDATA[ head_image=#head_image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.privacy">
+                <![CDATA[ privacy=#privacy:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.settle_card_z_scan">
+                <![CDATA[ settle_card_z_scan=#settle_card_z_scan:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.settle_card_f_scan">
+                <![CDATA[ settle_card_f_scan=#settle_card_f_scan:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.id_card_z_image">
+                <![CDATA[ id_card_z_image=#id_card_z_image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.id_card_f_image">
+                <![CDATA[ id_card_f_image=#id_card_f_image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.hand_idcard_image">
+                <![CDATA[ hand_idcard_image=#hand_idcard_image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.credit_card_z_image">
+                <![CDATA[ credit_card_z_image=#credit_card_z_image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.hand_credit_image">
+                <![CDATA[ hand_credit_image=#hand_credit_image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.state">
+                <![CDATA[ state=#state:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.authority">
+                <![CDATA[ authority=#authority:TEXT# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.reject_reason">
+                <![CDATA[ reject_reason=#reject_reason:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.create_time">
+                <![CDATA[ create_time=#create_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.hortation_num">
+                <![CDATA[ hortation_num=#hortation_num:NUMERIC# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除用户-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_user_info where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+    <!--查询等级-->
+    <select id="selectGradeByNumber" parameterClass="String" resultClass="String">
+        select grade from ape_user_info where number = #number#
+    </select>
+
+</sqlMap>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+行政区域县区信息表
+User: Created by auto build
+Date: 2018-05-28 17:05:06
+-->
+<sqlMap namespace="common_areas">
+
+    <typeAlias alias="common_areas" type="com.rogrand.common.domain.Areas" />
+
+    <!--行政区域县区信息表分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id最小值-->
+            <isNotEmpty prepend="and" property="id_min">
+                <![CDATA[ t1.id >= #id_min# ]]>
+            </isNotEmpty>
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--id最大值-->
+            <isNotEmpty prepend="and" property="id_max">
+                <![CDATA[ t1.id <= #id_max# ]]>
+            </isNotEmpty>
+            <!--areaid-->
+            <isNotEmpty prepend="and" property="areaid">
+                <![CDATA[ instr(t1.areaid, #areaid#) > 0 ]]>
+            </isNotEmpty>
+            <!--area-->
+            <isNotEmpty prepend="and" property="area">
+                <![CDATA[ instr(t1.area, #area#) > 0 ]]>
+            </isNotEmpty>
+            <!--cityid-->
+            <isNotEmpty prepend="and" property="cityid">
+                <![CDATA[ instr(t1.cityid, #cityid#) > 0 ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--行政区域县区信息表分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from common_areas t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--行政区域县区信息表分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="common_areas">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.areaid,
+                t1.area,
+                t1.cityid
+            from common_areas t1
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建行政区域县区信息表-->
+    <insert id="create" parameterClass="common_areas">
+        <![CDATA[
+            insert into common_areas(
+                areaid,
+                area,
+                cityid
+            ) values (
+                #areaid:VARCHAR#,
+                #area:VARCHAR#,
+                #cityid:VARCHAR#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建行政区域县区信息表-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into common_areas(
+                areaid,
+                area,
+                cityid
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].areaid:VARCHAR#,
+                    #[].area:VARCHAR#,
+                    #[].cityid:VARCHAR#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新行政区域县区信息表-->
+    <update id="update" parameterClass="common_areas">
+        <![CDATA[ update common_areas ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.areaid">
+                <![CDATA[ areaid=#areaid:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.area">
+                <![CDATA[ area=#area:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.cityid">
+                <![CDATA[ cityid=#cityid:VARCHAR# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除行政区域县区信息表-->
+    <delete id="delete" parameterClass="common_areas">
+        <![CDATA[
+            delete from common_areas where id = #id#
+        ]]>
+    </delete>
+
+</sqlMap>

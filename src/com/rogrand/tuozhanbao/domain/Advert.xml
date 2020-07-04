@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+广告
+User: Created by auto build
+Date: 2018-09-22 16:03:55
+-->
+<sqlMap namespace="ape_advert">
+
+    <typeAlias alias="ape_advert" type="com.rogrand.tuozhanbao.domain.Advert" />
+
+    <!--广告分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--分类-->
+            <isNotEmpty prepend="and" property="classify">
+                <![CDATA[ instr(t1.classify, #classify#) > 0 ]]>
+            </isNotEmpty>
+            <!--标题-->
+            <isNotEmpty prepend="and" property="title">
+                <![CDATA[ instr(t1.title, #title#) > 0 ]]>
+            </isNotEmpty>
+            <!--介绍-->
+            <isNotEmpty prepend="and" property="introduce">
+                <![CDATA[ instr(t1.introduce, #introduce#) > 0 ]]>
+            </isNotEmpty>
+            <!--主图片-->
+            <isNotEmpty prepend="and" property="image">
+                <![CDATA[ instr(t1.image, #image#) > 0 ]]>
+            </isNotEmpty>
+            <!--跳转链接-->
+            <isNotEmpty prepend="and" property="link_url">
+                <![CDATA[ instr(t1.link_url, #link_url#) > 0 ]]>
+            </isNotEmpty>
+            <!--排序值最小值-->
+            <isNotEmpty prepend="and" property="order_no_min">
+                <![CDATA[ t1.order_no >= #order_no_min# ]]>
+            </isNotEmpty>
+            <!--排序值等于-->
+            <isNotEmpty prepend="and" property="order_no">
+                <![CDATA[ t1.order_no = #order_no# ]]>
+            </isNotEmpty>
+            <!--排序值最大值-->
+            <isNotEmpty prepend="and" property="order_no_max">
+                <![CDATA[ t1.order_no <= #order_no_max# ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--广告分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_advert t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--广告分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_advert">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.classify,
+                t1.title,
+                t1.introduce,
+                t1.image,
+                t1.content,
+                t1.link_url,
+                t1.order_no
+            from ape_advert t1
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建广告-->
+    <insert id="create" parameterClass="ape_advert">
+        <![CDATA[
+            insert into ape_advert(
+                classify,
+                title,
+                introduce,
+                image,
+                content,
+                link_url,
+                order_no
+            ) values (
+                #classify:VARCHAR#,
+                #title:VARCHAR#,
+                #introduce:VARCHAR#,
+                #image:VARCHAR#,
+                #content:TEXT#,
+                #link_url:VARCHAR#,
+                #order_no:NUMERIC#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建广告-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_advert(
+                classify,
+                title,
+                introduce,
+                image,
+                content,
+                link_url,
+                order_no
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].classify:VARCHAR#,
+                    #[].title:VARCHAR#,
+                    #[].introduce:VARCHAR#,
+                    #[].image:VARCHAR#,
+                    #[].content:TEXT#,
+                    #[].link_url:VARCHAR#,
+                    #[].order_no:NUMERIC#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新广告-->
+    <update id="update" parameterClass="ape_advert">
+        <![CDATA[ update ape_advert ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.classify">
+                <![CDATA[ classify=#classify:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.title">
+                <![CDATA[ title=#title:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.introduce">
+                <![CDATA[ introduce=#introduce:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.image">
+                <![CDATA[ image=#image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.content">
+                <![CDATA[ content=#content:TEXT# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.link_url">
+                <![CDATA[ link_url=#link_url:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.order_no">
+                <![CDATA[ order_no=#order_no:NUMERIC# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除广告-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_advert where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>

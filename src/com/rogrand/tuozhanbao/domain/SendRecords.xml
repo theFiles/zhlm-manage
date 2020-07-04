@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+配送记录
+User: Created by auto build
+Date: 2018-09-22 16:03:55
+-->
+<sqlMap namespace="ape_send_records">
+
+    <typeAlias alias="ape_send_records" type="com.rogrand.tuozhanbao.domain.SendRecords" />
+
+    <!--配送记录分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--订单id最小值-->
+            <isNotEmpty prepend="and" property="order_id_min">
+                <![CDATA[ t1.order_id >= #order_id_min# ]]>
+            </isNotEmpty>
+            <!--订单id等于-->
+            <isNotEmpty prepend="and" property="order_id">
+                <![CDATA[ t1.order_id = #order_id# ]]>
+            </isNotEmpty>
+            <!--订单id最大值-->
+            <isNotEmpty prepend="and" property="order_id_max">
+                <![CDATA[ t1.order_id <= #order_id_max# ]]>
+            </isNotEmpty>
+            <!--配送单号-->
+            <isNotEmpty prepend="and" property="send_no">
+                <![CDATA[ instr(t1.send_no, #send_no#) > 0 ]]>
+            </isNotEmpty>
+            <!--配送数量最小值-->
+            <isNotEmpty prepend="and" property="count_min">
+                <![CDATA[ t1.count >= #count_min# ]]>
+            </isNotEmpty>
+            <!--配送数量等于-->
+            <isNotEmpty prepend="and" property="count">
+                <![CDATA[ t1.count = #count# ]]>
+            </isNotEmpty>
+            <!--配送数量最大值-->
+            <isNotEmpty prepend="and" property="count_max">
+                <![CDATA[ t1.count <= #count_max# ]]>
+            </isNotEmpty>
+            <!--状态-->
+            <isNotEmpty prepend="and" property="state">
+                <![CDATA[ instr(t1.state, #state#) > 0 ]]>
+            </isNotEmpty>
+            <!--创建时间开始-->
+            <isNotEmpty prepend="and" property="create_time_begin">
+                <![CDATA[ t1.create_time >= str_to_date(#create_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--创建时间结束-->
+            <isNotEmpty prepend="and" property="create_time_end">
+                <![CDATA[ t1.create_time <= str_to_date('$create_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--发货时间开始-->
+            <isNotEmpty prepend="and" property="send_time_begin">
+                <![CDATA[ t1.send_time >= str_to_date(#send_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--发货时间结束-->
+            <isNotEmpty prepend="and" property="send_time_end">
+                <![CDATA[ t1.send_time <= str_to_date('$send_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--快递单号-->
+            <isNotEmpty prepend="and" property="express_no">
+                <![CDATA[ instr(t1.express_no, #express_no#) > 0 ]]>
+            </isNotEmpty>
+            <!--快递公司-->
+            <isNotEmpty prepend="and" property="express_company">
+                <![CDATA[ instr(t1.express_company, #express_company#) > 0 ]]>
+            </isNotEmpty>
+            <!--联系人-->
+            <isNotEmpty prepend="and" property="name">
+                <![CDATA[ instr(t1.name, #name#) > 0 ]]>
+            </isNotEmpty>
+            <!--联系电话-->
+            <isNotEmpty prepend="and" property="phone">
+                <![CDATA[ instr(t1.phone, #phone#) > 0 ]]>
+            </isNotEmpty>
+            <!--省份-->
+            <isNotEmpty prepend="and" property="province">
+                <![CDATA[ instr(t1.province, #province#) > 0 ]]>
+            </isNotEmpty>
+            <!--城市-->
+            <isNotEmpty prepend="and" property="city">
+                <![CDATA[ instr(t1.city, #city#) > 0 ]]>
+            </isNotEmpty>
+            <!--区-->
+            <isNotEmpty prepend="and" property="area">
+                <![CDATA[ instr(t1.area, #area#) > 0 ]]>
+            </isNotEmpty>
+            <!--详细地址-->
+            <isNotEmpty prepend="and" property="address">
+                <![CDATA[ instr(t1.address, #address#) > 0 ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--配送记录分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_send_records t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--配送记录分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_send_records">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.order_id,
+                t2.order_no order_id_display,
+                t2.state order_state,
+                t1.send_no,
+                t1.count,
+                t1.state,
+                t1.create_time,
+                t1.send_time,
+                t1.express_no,
+                t1.express_company,
+                t1.name,
+                t1.phone,
+                t1.province,
+                t1.city,
+                t1.area,
+                t1.address
+            from ape_send_records t1
+            left join ape_orders t2 on t1.order_id = t2.id
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建配送记录-->
+    <insert id="create" parameterClass="ape_send_records">
+        <![CDATA[
+            insert into ape_send_records(
+                order_id,
+                send_no,
+                count,
+                state,
+                create_time,
+                send_time,
+                express_no,
+                express_company,
+                name,
+                phone,
+                province,
+                city,
+                area,
+                address
+            ) values (
+                #order_id:NUMERIC#,
+                #send_no:VARCHAR#,
+                #count:NUMERIC#,
+                #state:VARCHAR#,
+                #create_time:TIMESTAMP#,
+                #send_time:TIMESTAMP#,
+                #express_no:VARCHAR#,
+                #express_company:VARCHAR#,
+                #name:VARCHAR#,
+                #phone:VARCHAR#,
+                #province:VARCHAR#,
+                #city:VARCHAR#,
+                #area:VARCHAR#,
+                #address:VARCHAR#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建配送记录-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_send_records(
+                order_id,
+                send_no,
+                count,
+                state,
+                create_time,
+                send_time,
+                express_no,
+                express_company,
+                name,
+                phone,
+                province,
+                city,
+                area,
+                address
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].order_id:NUMERIC#,
+                    #[].send_no:VARCHAR#,
+                    #[].count:NUMERIC#,
+                    #[].state:VARCHAR#,
+                    #[].create_time:TIMESTAMP#,
+                    #[].send_time:TIMESTAMP#,
+                    #[].express_no:VARCHAR#,
+                    #[].express_company:VARCHAR#,
+                    #[].name:VARCHAR#,
+                    #[].phone:VARCHAR#,
+                    #[].province:VARCHAR#,
+                    #[].city:VARCHAR#,
+                    #[].area:VARCHAR#,
+                    #[].address:VARCHAR#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新配送记录-->
+    <update id="update" parameterClass="ape_send_records">
+        <![CDATA[ update ape_send_records ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.order_id">
+                <![CDATA[ order_id=#order_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.send_no">
+                <![CDATA[ send_no=#send_no:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.count">
+                <![CDATA[ count=#count:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.state">
+                <![CDATA[ state=#state:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.create_time">
+                <![CDATA[ create_time=#create_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.send_time">
+                <![CDATA[ send_time=#send_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.express_no">
+                <![CDATA[ express_no=#express_no:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.express_company">
+                <![CDATA[ express_company=#express_company:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.name">
+                <![CDATA[ name=#name:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.phone">
+                <![CDATA[ phone=#phone:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.province">
+                <![CDATA[ province=#province:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.city">
+                <![CDATA[ city=#city:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.area">
+                <![CDATA[ area=#area:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.address">
+                <![CDATA[ address=#address:VARCHAR# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除配送记录-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_send_records where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>

@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+交易记录表
+User: Created by auto build
+Date: 2018-09-22 16:03:55
+-->
+<sqlMap namespace="ape_trade_records">
+
+    <typeAlias alias="ape_trade_records" type="com.rogrand.tuozhanbao.domain.TradeRecords" />
+
+    <!--交易记录表分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--app-->
+            <isNotEmpty prepend="and" property="app">
+                <![CDATA[ instr(t1.app, #app#) > 0 ]]>
+            </isNotEmpty>
+            <!--商户订单号-->
+            <isNotEmpty prepend="and" property="order_no">
+                <![CDATA[ instr(t1.order_no, #order_no#) > 0 ]]>
+            </isNotEmpty>
+            <!--用户id等于-->
+            <isNotEmpty prepend="and" property="user_id">
+                <![CDATA[ t1.user_id = #user_id# ]]>
+            </isNotEmpty>
+            <!--用户id_name-->
+            <isNotEmpty prepend="and" property="user_id_display">
+                <![CDATA[ instr(t2.real_name, #user_id_display#) > 0 ]]>
+            </isNotEmpty>
+            <!--商户id等于-->
+            <isNotEmpty prepend="and" property="merchant_id">
+                <![CDATA[ t1.merchant_id = #merchant_id# ]]>
+            </isNotEmpty>
+            <!--商户id_name-->
+            <isNotEmpty prepend="and" property="merchant_id_display">
+                <![CDATA[ instr(t3.name, #merchant_id_display#) > 0 ]]>
+            </isNotEmpty>
+            <!--sn码-->
+            <isNotEmpty prepend="and" property="sn">
+                <![CDATA[ instr(t1.sn, #sn#) > 0 ]]>
+            </isNotEmpty>
+            <!--厂商-->
+            <isNotEmpty prepend="and" property="manufacturer">
+                <![CDATA[ instr(t1.manufacturer, #manufacturer#) > 0 ]]>
+            </isNotEmpty>
+            <!--交易金额最小值-->
+            <isNotEmpty prepend="and" property="trade_amount_min">
+                <![CDATA[ t1.trade_amount >= #trade_amount_min# ]]>
+            </isNotEmpty>
+            <!--交易金额等于-->
+            <isNotEmpty prepend="and" property="trade_amount">
+                <![CDATA[ t1.trade_amount = #trade_amount# ]]>
+            </isNotEmpty>
+            <!--交易金额最大值-->
+            <isNotEmpty prepend="and" property="trade_amount_max">
+                <![CDATA[ t1.trade_amount <= #trade_amount_max# ]]>
+            </isNotEmpty>
+            <!--到账金额最小值-->
+            <isNotEmpty prepend="and" property="arrival_amount_min">
+                <![CDATA[ t1.arrival_amount >= #arrival_amount_min# ]]>
+            </isNotEmpty>
+            <!--到账金额等于-->
+            <isNotEmpty prepend="and" property="arrival_amount">
+                <![CDATA[ t1.arrival_amount = #arrival_amount# ]]>
+            </isNotEmpty>
+            <!--到账金额最大值-->
+            <isNotEmpty prepend="and" property="arrival_amount_max">
+                <![CDATA[ t1.arrival_amount <= #arrival_amount_max# ]]>
+            </isNotEmpty>
+            <!--刷卡银行卡-->
+            <isNotEmpty prepend="and" property="bank_card">
+                <![CDATA[ instr(t1.bank_card, #bank_card#) > 0 ]]>
+            </isNotEmpty>
+            <!--交易时间开始-->
+            <isNotEmpty prepend="and" property="trade_time_begin">
+                <![CDATA[ t1.trade_time >= str_to_date(#trade_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--交易时间结束-->
+            <isNotEmpty prepend="and" property="trade_time_end">
+                <![CDATA[ t1.trade_time <= str_to_date('$trade_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--费率最小值-->
+            <isNotEmpty prepend="and" property="rate_min">
+                <![CDATA[ t1.rate >= #rate_min# ]]>
+            </isNotEmpty>
+            <!--费率等于-->
+            <isNotEmpty prepend="and" property="rate">
+                <![CDATA[ t1.rate = #rate# ]]>
+            </isNotEmpty>
+            <!--费率最大值-->
+            <isNotEmpty prepend="and" property="rate_max">
+                <![CDATA[ t1.rate <= #rate_max# ]]>
+            </isNotEmpty>
+            <!--商户手续费最小值-->
+            <isNotEmpty prepend="and" property="poundage_min">
+                <![CDATA[ t1.poundage >= #poundage_min# ]]>
+            </isNotEmpty>
+            <!--商户手续费等于-->
+            <isNotEmpty prepend="and" property="poundage">
+                <![CDATA[ t1.poundage = #poundage# ]]>
+            </isNotEmpty>
+            <!--商户手续费最大值-->
+            <isNotEmpty prepend="and" property="poundage_max">
+                <![CDATA[ t1.poundage <= #poundage_max# ]]>
+            </isNotEmpty>
+            <!--付款方式-->
+            <isNotEmpty prepend="and" property="pay_way">
+                <![CDATA[ instr(t1.pay_way, #pay_way#) > 0 ]]>
+            </isNotEmpty>
+            <!--交易状态-->
+            <isNotEmpty prepend="and" property="trade_state">
+                <![CDATA[ instr(t1.trade_state, #trade_state#) > 0 ]]>
+            </isNotEmpty>
+            <!--渠道id最小值-->
+            <isNotEmpty prepend="and" property="channel_id_min">
+                <![CDATA[ t1.channel_id >= #channel_id_min# ]]>
+            </isNotEmpty>
+            <!--渠道id等于-->
+            <isNotEmpty prepend="and" property="channel_id">
+                <![CDATA[ t1.channel_id = #channel_id# ]]>
+            </isNotEmpty>
+            <!--渠道id最大值-->
+            <isNotEmpty prepend="and" property="channel_id_max">
+                <![CDATA[ t1.channel_id <= #channel_id_max# ]]>
+            </isNotEmpty>
+            <!--渠道商户编号-->
+            <isNotEmpty prepend="and" property="channel_mer_no">
+                <![CDATA[ instr(t1.channel_mer_no, #channel_mer_no#) > 0 ]]>
+            </isNotEmpty>
+            <!--渠道订单号-->
+            <isNotEmpty prepend="and" property="channel_order_no">
+                <![CDATA[ instr(t1.channel_order_no, #channel_order_no#) > 0 ]]>
+            </isNotEmpty>
+            <!--失败原因-->
+            <isNotEmpty prepend="and" property="failreason">
+                <![CDATA[ instr(t1.failreason, #failreason#) > 0 ]]>
+            </isNotEmpty>
+            <!--经度最小值-->
+            <isNotEmpty prepend="and" property="lon_min">
+                <![CDATA[ t1.lon >= #lon_min# ]]>
+            </isNotEmpty>
+            <!--经度等于-->
+            <isNotEmpty prepend="and" property="lon">
+                <![CDATA[ t1.lon = #lon# ]]>
+            </isNotEmpty>
+            <!--经度最大值-->
+            <isNotEmpty prepend="and" property="lon_max">
+                <![CDATA[ t1.lon <= #lon_max# ]]>
+            </isNotEmpty>
+            <!--纬度最小值-->
+            <isNotEmpty prepend="and" property="lat_min">
+                <![CDATA[ t1.lat >= #lat_min# ]]>
+            </isNotEmpty>
+            <!--纬度等于-->
+            <isNotEmpty prepend="and" property="lat">
+                <![CDATA[ t1.lat = #lat# ]]>
+            </isNotEmpty>
+            <!--纬度最大值-->
+            <isNotEmpty prepend="and" property="lat_max">
+                <![CDATA[ t1.lat <= #lat_max# ]]>
+            </isNotEmpty>
+            <!--交易地址-->
+            <isNotEmpty prepend="and" property="trade_address">
+                <![CDATA[ instr(t1.trade_address, #trade_address#) > 0 ]]>
+            </isNotEmpty>
+            <!--备注-->
+            <isNotEmpty prepend="and" property="remarks">
+                <![CDATA[ instr(t1.remarks, #remarks#) > 0 ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--交易记录表分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_trade_records t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--交易记录表分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_trade_records">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.app,
+                t1.order_no,
+                t1.user_id,
+                t2.real_name user_id_display,
+                t1.merchant_id,
+                t3.name merchant_id_display,
+                t1.sn,
+                t1.manufacturer,
+                t1.trade_amount,
+                t1.arrival_amount,
+                t1.bank_card,
+                t1.trade_time,
+                t1.rate,
+                t1.poundage,
+                t1.pay_way,
+                t1.trade_state,
+                t1.channel_id,
+                t1.channel_mer_no,
+                t1.channel_order_no,
+                t1.failreason,
+                t1.lon,
+                t1.lat,
+                t1.trade_address,
+                t1.remarks
+            from ape_trade_records t1
+            left join ape_user_info t2 on t1.user_id = t2.id
+            left join ape_merchant t3 on t1.merchant_id = t3.id
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建交易记录表-->
+    <insert id="create" parameterClass="ape_trade_records">
+        <![CDATA[
+            insert into ape_trade_records(
+                app,
+                order_no,
+                user_id,
+                merchant_id,
+                sn,
+                manufacturer,
+                trade_amount,
+                arrival_amount,
+                bank_card,
+                trade_time,
+                rate,
+                poundage,
+                pay_way,
+                trade_state,
+                channel_id,
+                channel_mer_no,
+                channel_order_no,
+                failreason,
+                lon,
+                lat,
+                trade_address,
+                remarks
+            ) values (
+                #app:VARCHAR#,
+                #order_no:VARCHAR#,
+                #user_id:NUMERIC#,
+                #merchant_id:NUMERIC#,
+                #sn:VARCHAR#,
+                #manufacturer:VARCHAR#,
+                #trade_amount:NUMERIC#,
+                #arrival_amount:NUMERIC#,
+                #bank_card:VARCHAR#,
+                #trade_time:TIMESTAMP#,
+                #rate:NUMERIC#,
+                #poundage:NUMERIC#,
+                #pay_way:VARCHAR#,
+                #trade_state:VARCHAR#,
+                #channel_id:NUMERIC#,
+                #channel_mer_no:VARCHAR#,
+                #channel_order_no:VARCHAR#,
+                #failreason:VARCHAR#,
+                #lon:NUMERIC#,
+                #lat:NUMERIC#,
+                #trade_address:VARCHAR#,
+                #remarks:VARCHAR#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建交易记录表-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_trade_records(
+                app,
+                order_no,
+                user_id,
+                merchant_id,
+                sn,
+                manufacturer,
+                trade_amount,
+                arrival_amount,
+                bank_card,
+                trade_time,
+                rate,
+                poundage,
+                pay_way,
+                trade_state,
+                channel_id,
+                channel_mer_no,
+                channel_order_no,
+                failreason,
+                lon,
+                lat,
+                trade_address,
+                remarks
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].app:VARCHAR#,
+                    #[].order_no:VARCHAR#,
+                    #[].user_id:NUMERIC#,
+                    #[].merchant_id:NUMERIC#,
+                    #[].sn:VARCHAR#,
+                    #[].manufacturer:VARCHAR#,
+                    #[].trade_amount:NUMERIC#,
+                    #[].arrival_amount:NUMERIC#,
+                    #[].bank_card:VARCHAR#,
+                    #[].trade_time:TIMESTAMP#,
+                    #[].rate:NUMERIC#,
+                    #[].poundage:NUMERIC#,
+                    #[].pay_way:VARCHAR#,
+                    #[].trade_state:VARCHAR#,
+                    #[].channel_id:NUMERIC#,
+                    #[].channel_mer_no:VARCHAR#,
+                    #[].channel_order_no:VARCHAR#,
+                    #[].failreason:VARCHAR#,
+                    #[].lon:NUMERIC#,
+                    #[].lat:NUMERIC#,
+                    #[].trade_address:VARCHAR#,
+                    #[].remarks:VARCHAR#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新交易记录表-->
+    <update id="update" parameterClass="ape_trade_records">
+        <![CDATA[ update ape_trade_records ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.app">
+                <![CDATA[ app=#app:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.order_no">
+                <![CDATA[ order_no=#order_no:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.user_id">
+                <![CDATA[ user_id=#user_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.merchant_id">
+                <![CDATA[ merchant_id=#merchant_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.sn">
+                <![CDATA[ sn=#sn:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.manufacturer">
+                <![CDATA[ manufacturer=#manufacturer:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.trade_amount">
+                <![CDATA[ trade_amount=#trade_amount:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.arrival_amount">
+                <![CDATA[ arrival_amount=#arrival_amount:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.bank_card">
+                <![CDATA[ bank_card=#bank_card:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.trade_time">
+                <![CDATA[ trade_time=#trade_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.rate">
+                <![CDATA[ rate=#rate:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.poundage">
+                <![CDATA[ poundage=#poundage:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.pay_way">
+                <![CDATA[ pay_way=#pay_way:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.trade_state">
+                <![CDATA[ trade_state=#trade_state:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.channel_id">
+                <![CDATA[ channel_id=#channel_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.channel_mer_no">
+                <![CDATA[ channel_mer_no=#channel_mer_no:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.channel_order_no">
+                <![CDATA[ channel_order_no=#channel_order_no:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.failreason">
+                <![CDATA[ failreason=#failreason:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.lon">
+                <![CDATA[ lon=#lon:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.lat">
+                <![CDATA[ lat=#lat:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.trade_address">
+                <![CDATA[ trade_address=#trade_address:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.remarks">
+                <![CDATA[ remarks=#remarks:VARCHAR# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除交易记录表-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_trade_records where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+
+    <!--查询每个月的团队交易额-->
+    <select id="selectTradeAmount" resultClass="java.math.BigDecimal" parameterClass="String">
+        <![CDATA[
+            select sum(trade_amount) from
+            (select t1.user_id, t2.number, t1.trade_amount, t1.trade_time
+            from ape_trade_records t1 left join ape_user_info t2 on t1.user_id = t2.id
+            where (t2.number like concat(#user_number#, '<%') or t2.number = #user_number#) and t1.trade_time like CONCAT(DATE_FORMAT(DATE_SUB(curdate(),INTERVAL 1 MONTH),'%Y-%m-'),'%')) b1
+        ]]>
+    </select>
+
+    <!--查询上个月交易记录-->
+    <select id="selectTradeRecords" resultClass="ape_trade_records">
+        <![CDATA[
+            select t1.order_no,t1.user_id, t1.merchant_id, t1.trade_amount, t1.trade_time
+            from ape_trade_records t1 left join ape_user_info t2 on t1.user_id = t2.id
+            where t1.trade_time like CONCAT(DATE_FORMAT(DATE_SUB(curdate(),INTERVAL 1 MONTH),'%Y-%m-'),'%')
+        ]]>
+    </select>
+
+</sqlMap>

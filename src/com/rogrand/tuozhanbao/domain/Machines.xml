@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+机具
+User: Created by auto build
+Date: 2018-09-22 16:03:55
+-->
+<sqlMap namespace="ape_machines">
+
+    <typeAlias alias="ape_machines" type="com.rogrand.tuozhanbao.domain.Machines" />
+
+    <!--机具分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--名称-->
+            <isNotEmpty prepend="and" property="name">
+                <![CDATA[ instr(t1.name, #name#) > 0 ]]>
+            </isNotEmpty>
+            <!--机具型号-->
+            <isNotEmpty prepend="and" property="model_number">
+                <![CDATA[ instr(t1.model_number, #model_number#) > 0 ]]>
+            </isNotEmpty>
+            <!--厂家-->
+            <isNotEmpty prepend="and" property="manufacturer">
+                <![CDATA[ instr(t1.manufacturer, #manufacturer#) > 0 ]]>
+            </isNotEmpty>
+            <!--价格最小值-->
+            <isNotEmpty prepend="and" property="price_min">
+                <![CDATA[ t1.price >= #price_min# ]]>
+            </isNotEmpty>
+            <!--价格等于-->
+            <isNotEmpty prepend="and" property="price">
+                <![CDATA[ t1.price = #price# ]]>
+            </isNotEmpty>
+            <!--价格最大值-->
+            <isNotEmpty prepend="and" property="price_max">
+                <![CDATA[ t1.price <= #price_max# ]]>
+            </isNotEmpty>
+            <!--返现金额最小值-->
+            <isNotEmpty prepend="and" property="return_money_min">
+                <![CDATA[ t1.return_money >= #return_money_min# ]]>
+            </isNotEmpty>
+            <!--返现金额等于-->
+            <isNotEmpty prepend="and" property="return_money">
+                <![CDATA[ t1.return_money = #return_money# ]]>
+            </isNotEmpty>
+            <!--返现金额最大值-->
+            <isNotEmpty prepend="and" property="return_money_max">
+                <![CDATA[ t1.return_money <= #return_money_max# ]]>
+            </isNotEmpty>
+            <!--起步台数最小值-->
+            <isNotEmpty prepend="and" property="min_count_min">
+                <![CDATA[ t1.min_count >= #min_count_min# ]]>
+            </isNotEmpty>
+            <!--起步台数等于-->
+            <isNotEmpty prepend="and" property="min_count">
+                <![CDATA[ t1.min_count = #min_count# ]]>
+            </isNotEmpty>
+            <!--起步台数最大值-->
+            <isNotEmpty prepend="and" property="min_count_max">
+                <![CDATA[ t1.min_count <= #min_count_max# ]]>
+            </isNotEmpty>
+            <!--图片-->
+            <isNotEmpty prepend="and" property="image">
+                <![CDATA[ instr(t1.image, #image#) > 0 ]]>
+            </isNotEmpty>
+            <!--创建时间开始-->
+            <isNotEmpty prepend="and" property="create_time_begin">
+                <![CDATA[ t1.create_time >= str_to_date(#create_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--创建时间结束-->
+            <isNotEmpty prepend="and" property="create_time_end">
+                <![CDATA[ t1.create_time <= str_to_date('$create_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--修改时间开始-->
+            <isNotEmpty prepend="and" property="update_time_begin">
+                <![CDATA[ t1.update_time >= str_to_date(#update_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--修改时间结束-->
+            <isNotEmpty prepend="and" property="update_time_end">
+                <![CDATA[ t1.update_time <= str_to_date('$update_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--机具分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_machines t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--机具分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_machines">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.name,
+                t1.model_number,
+                t1.manufacturer,
+                t1.price,
+                t1.return_money,
+                t1.min_count,
+                t1.image,
+                t1.content,
+                t1.create_time,
+                t1.update_time
+            from ape_machines t1
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建机具-->
+    <insert id="create" parameterClass="ape_machines">
+        <![CDATA[
+            insert into ape_machines(
+                name,
+                model_number,
+                manufacturer,
+                price,
+                return_money,
+                min_count,
+                image,
+                content,
+                create_time,
+                update_time
+            ) values (
+                #name:VARCHAR#,
+                #model_number:VARCHAR#,
+                #manufacturer:VARCHAR#,
+                #price:NUMERIC#,
+                #return_money:NUMERIC#,
+                #min_count:NUMERIC#,
+                #image:VARCHAR#,
+                #content:TEXT#,
+                #create_time:TIMESTAMP#,
+                #update_time:TIMESTAMP#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建机具-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_machines(
+                name,
+                model_number,
+                manufacturer,
+                price,
+                return_money,
+                min_count,
+                image,
+                content,
+                create_time,
+                update_time
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].name:VARCHAR#,
+                    #[].model_number:VARCHAR#,
+                    #[].manufacturer:VARCHAR#,
+                    #[].price:NUMERIC#,
+                    #[].return_money:NUMERIC#,
+                    #[].min_count:NUMERIC#,
+                    #[].image:VARCHAR#,
+                    #[].content:TEXT#,
+                    #[].create_time:TIMESTAMP#,
+                    #[].update_time:TIMESTAMP#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新机具-->
+    <update id="update" parameterClass="ape_machines">
+        <![CDATA[ update ape_machines ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.name">
+                <![CDATA[ name=#name:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.model_number">
+                <![CDATA[ model_number=#model_number:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.manufacturer">
+                <![CDATA[ manufacturer=#manufacturer:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.price">
+                <![CDATA[ price=#price:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.return_money">
+                <![CDATA[ return_money=#return_money:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.min_count">
+                <![CDATA[ min_count=#min_count:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.image">
+                <![CDATA[ image=#image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.content">
+                <![CDATA[ content=#content:TEXT# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.create_time">
+                <![CDATA[ create_time=#create_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.update_time">
+                <![CDATA[ update_time=#update_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除机具-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_machines where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>

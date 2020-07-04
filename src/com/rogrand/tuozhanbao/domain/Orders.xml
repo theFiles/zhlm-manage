@@ -1,0 +1,431 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+购买POS机订单
+User: Created by auto build
+Date: 2018-09-22 16:03:55
+-->
+<sqlMap namespace="ape_orders">
+
+    <typeAlias alias="ape_orders" type="com.rogrand.tuozhanbao.domain.Orders" />
+
+    <!--购买POS机订单分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--用户id最小值-->
+            <isNotEmpty prepend="and" property="user_id_min">
+                <![CDATA[ t1.user_id >= #user_id_min# ]]>
+            </isNotEmpty>
+            <!--用户id等于-->
+            <isNotEmpty prepend="and" property="user_id">
+                <![CDATA[ t1.user_id = #user_id# ]]>
+            </isNotEmpty>
+            <!--用户手机号-->
+            <isNotEmpty prepend="and" property="user_id_display">
+                <![CDATA[ instr(t2.phone, #user_id_display#) > 0 ]]>
+            </isNotEmpty>
+            <!--订单号-->
+            <isNotEmpty prepend="and" property="order_no">
+                <![CDATA[ instr(t1.order_no, #order_no#) > 0 ]]>
+            </isNotEmpty>
+            <!--订单金额最小值-->
+            <isNotEmpty prepend="and" property="order_amount_min">
+                <![CDATA[ t1.order_amount >= #order_amount_min# ]]>
+            </isNotEmpty>
+            <!--订单金额等于-->
+            <isNotEmpty prepend="and" property="order_amount">
+                <![CDATA[ t1.order_amount = #order_amount# ]]>
+            </isNotEmpty>
+            <!--订单金额最大值-->
+            <isNotEmpty prepend="and" property="order_amount_max">
+                <![CDATA[ t1.order_amount <= #order_amount_max# ]]>
+            </isNotEmpty>
+            <!--订单状态-->
+            <isNotEmpty prepend="and" property="state">
+                <![CDATA[ instr(t1.state, #state#) > 0 ]]>
+            </isNotEmpty>
+            <!--创建时间开始-->
+            <isNotEmpty prepend="and" property="create_time_begin">
+                <![CDATA[ t1.create_time >= str_to_date(#create_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--创建时间结束-->
+            <isNotEmpty prepend="and" property="create_time_end">
+                <![CDATA[ t1.create_time <= str_to_date('$create_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--付款时间开始-->
+            <isNotEmpty prepend="and" property="pay_time_begin">
+                <![CDATA[ t1.pay_time >= str_to_date(#pay_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--付款时间结束-->
+            <isNotEmpty prepend="and" property="pay_time_end">
+                <![CDATA[ t1.pay_time <= str_to_date('$pay_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--付款方式-->
+            <isNotEmpty prepend="and" property="pay_way">
+                <![CDATA[ instr(t1.pay_way, #pay_way#) > 0 ]]>
+            </isNotEmpty>
+            <!--商品id最小值-->
+            <isNotEmpty prepend="and" property="goods_id_min">
+                <![CDATA[ t1.goods_id >= #goods_id_min# ]]>
+            </isNotEmpty>
+            <!--商品id等于-->
+            <isNotEmpty prepend="and" property="goods_id">
+                <![CDATA[ t1.goods_id = #goods_id# ]]>
+            </isNotEmpty>
+            <!--商品id最大值-->
+            <isNotEmpty prepend="and" property="goods_id_max">
+                <![CDATA[ t1.goods_id <= #goods_id_max# ]]>
+            </isNotEmpty>
+            <!--商品名称-->
+            <isNotEmpty prepend="and" property="goods_name">
+                <![CDATA[ instr(t1.goods_name, #goods_name#) > 0 ]]>
+            </isNotEmpty>
+            <!--商品价格最小值-->
+            <isNotEmpty prepend="and" property="goods_price_min">
+                <![CDATA[ t1.goods_price >= #goods_price_min# ]]>
+            </isNotEmpty>
+            <!--商品价格等于-->
+            <isNotEmpty prepend="and" property="goods_price">
+                <![CDATA[ t1.goods_price = #goods_price# ]]>
+            </isNotEmpty>
+            <!--商品价格最大值-->
+            <isNotEmpty prepend="and" property="goods_price_max">
+                <![CDATA[ t1.goods_price <= #goods_price_max# ]]>
+            </isNotEmpty>
+            <!--商品图片-->
+            <isNotEmpty prepend="and" property="goods_image">
+                <![CDATA[ instr(t1.goods_image, #goods_image#) > 0 ]]>
+            </isNotEmpty>
+            <!--购买数量最小值-->
+            <isNotEmpty prepend="and" property="total_count_min">
+                <![CDATA[ t1.total_count >= #total_count_min# ]]>
+            </isNotEmpty>
+            <!--购买数量等于-->
+            <isNotEmpty prepend="and" property="total_count">
+                <![CDATA[ t1.total_count = #total_count# ]]>
+            </isNotEmpty>
+            <!--购买数量最大值-->
+            <isNotEmpty prepend="and" property="total_count_max">
+                <![CDATA[ t1.total_count <= #total_count_max# ]]>
+            </isNotEmpty>
+            <!--配送数量最小值-->
+            <isNotEmpty prepend="and" property="send_count_min">
+                <![CDATA[ t1.send_count >= #send_count_min# ]]>
+            </isNotEmpty>
+            <!--配送数量等于-->
+            <isNotEmpty prepend="and" property="send_count">
+                <![CDATA[ t1.send_count = #send_count# ]]>
+            </isNotEmpty>
+            <!--配送数量最大值-->
+            <isNotEmpty prepend="and" property="send_count_max">
+                <![CDATA[ t1.send_count <= #send_count_max# ]]>
+            </isNotEmpty>
+            <!--剩余数量最小值-->
+            <isNotEmpty prepend="and" property="surplus_count_min">
+                <![CDATA[ t1.surplus_count >= #surplus_count_min# ]]>
+            </isNotEmpty>
+            <!--剩余数量等于-->
+            <isNotEmpty prepend="and" property="surplus_count">
+                <![CDATA[ t1.surplus_count = #surplus_count# ]]>
+            </isNotEmpty>
+            <!--剩余数量最大值-->
+            <isNotEmpty prepend="and" property="surplus_count_max">
+                <![CDATA[ t1.surplus_count <= #surplus_count_max# ]]>
+            </isNotEmpty>
+            <!--退货数量最小值-->
+            <isNotEmpty prepend="and" property="return_count_min">
+                <![CDATA[ t1.return_count >= #return_count_min# ]]>
+            </isNotEmpty>
+            <!--退货数量等于-->
+            <isNotEmpty prepend="and" property="return_count">
+                <![CDATA[ t1.return_count = #return_count# ]]>
+            </isNotEmpty>
+            <!--退货数量最大值-->
+            <isNotEmpty prepend="and" property="return_count_max">
+                <![CDATA[ t1.return_count <= #return_count_max# ]]>
+            </isNotEmpty>
+            <!--退款说明-->
+            <isNotEmpty prepend="and" property="return_explain">
+                <![CDATA[ instr(t1.return_explain, #return_explain#) > 0 ]]>
+            </isNotEmpty>
+            <!--退款审核是否通过-->
+            <isNotEmpty prepend="and" property="return_result">
+                <![CDATA[ instr(t1.return_result, #return_result#) > 0 ]]>
+            </isNotEmpty>
+            <!--退款金额最小值-->
+            <isNotEmpty prepend="and" property="return_money_min">
+                <![CDATA[ t1.return_money >= #return_money_min# ]]>
+            </isNotEmpty>
+            <!--退款金额等于-->
+            <isNotEmpty prepend="and" property="return_money">
+                <![CDATA[ t1.return_money = #return_money# ]]>
+            </isNotEmpty>
+            <!--退款金额最大值-->
+            <isNotEmpty prepend="and" property="return_money_max">
+                <![CDATA[ t1.return_money <= #return_money_max# ]]>
+            </isNotEmpty>
+            <!--退款路径-->
+            <isNotEmpty prepend="and" property="return_way">
+                <![CDATA[ instr(t1.return_way, #return_way#) > 0 ]]>
+            </isNotEmpty>
+            <!--审核管理员id最小值-->
+            <isNotEmpty prepend="and" property="manager_id_min">
+                <![CDATA[ t1.manager_id >= #manager_id_min# ]]>
+            </isNotEmpty>
+            <!--审核管理员id等于-->
+            <isNotEmpty prepend="and" property="manager_id">
+                <![CDATA[ t1.manager_id = #manager_id# ]]>
+            </isNotEmpty>
+            <!--审核管理员id最大值-->
+            <isNotEmpty prepend="and" property="manager_id_max">
+                <![CDATA[ t1.manager_id <= #manager_id_max# ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--购买POS机订单分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total
+            from ape_orders t1
+            left join ape_user_info t2 on t1.user_id = t2.id
+            left join ape_machines t3 on t1.goods_id = t3.id
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--购买POS机订单分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_orders">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.user_id,
+                t2.phone user_id_display,
+                t1.order_no,
+                t1.order_amount,
+                t1.state,
+                t1.create_time,
+                t1.pay_time,
+                t1.pay_way,
+                t1.goods_id,
+                t3.name goods_id_display,
+                t1.goods_name,
+                t1.goods_price,
+                t1.goods_image,
+                t1.total_count,
+                t1.send_count,
+                t1.surplus_count,
+                t1.return_count,
+                t1.return_explain,
+                t1.return_result,
+                t1.return_money,
+                t1.return_way,
+                t1.manager_id
+            from ape_orders t1
+            left join ape_user_info t2 on t1.user_id = t2.id
+            left join ape_machines t3 on t1.goods_id = t3.id
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建购买POS机订单-->
+    <insert id="create" parameterClass="ape_orders">
+        <![CDATA[
+            insert into ape_orders(
+                user_id,
+                order_no,
+                order_amount,
+                state,
+                create_time,
+                pay_time,
+                pay_way,
+                goods_id,
+                goods_name,
+                goods_price,
+                goods_image,
+                total_count,
+                send_count,
+                surplus_count,
+                return_count,
+                return_explain,
+                return_result,
+                return_money,
+                return_way,
+                manager_id
+            ) values (
+                #user_id:NUMERIC#,
+                #order_no:VARCHAR#,
+                #order_amount:NUMERIC#,
+                #state:VARCHAR#,
+                #create_time:TIMESTAMP#,
+                #pay_time:TIMESTAMP#,
+                #pay_way:VARCHAR#,
+                #goods_id:NUMERIC#,
+                #goods_name:VARCHAR#,
+                #goods_price:NUMERIC#,
+                #goods_image:VARCHAR#,
+                #total_count:NUMERIC#,
+                #send_count:NUMERIC#,
+                #surplus_count:NUMERIC#,
+                #return_count:NUMERIC#,
+                #return_explain:VARCHAR#,
+                #return_result:VARCHAR#,
+                #return_money:NUMERIC#,
+                #return_way:VARCHAR#,
+                #manager_id:NUMERIC#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建购买POS机订单-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_orders(
+                user_id,
+                order_no,
+                order_amount,
+                state,
+                create_time,
+                pay_time,
+                pay_way,
+                goods_id,
+                goods_name,
+                goods_price,
+                goods_image,
+                total_count,
+                send_count,
+                surplus_count,
+                return_count,
+                return_explain,
+                return_result,
+                return_money,
+                return_way,
+                manager_id
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].user_id:NUMERIC#,
+                    #[].order_no:VARCHAR#,
+                    #[].order_amount:NUMERIC#,
+                    #[].state:VARCHAR#,
+                    #[].create_time:TIMESTAMP#,
+                    #[].pay_time:TIMESTAMP#,
+                    #[].pay_way:VARCHAR#,
+                    #[].goods_id:NUMERIC#,
+                    #[].goods_name:VARCHAR#,
+                    #[].goods_price:NUMERIC#,
+                    #[].goods_image:VARCHAR#,
+                    #[].total_count:NUMERIC#,
+                    #[].send_count:NUMERIC#,
+                    #[].surplus_count:NUMERIC#,
+                    #[].return_count:NUMERIC#,
+                    #[].return_explain:VARCHAR#,
+                    #[].return_result:VARCHAR#,
+                    #[].return_money:NUMERIC#,
+                    #[].return_way:VARCHAR#,
+                    #[].manager_id:NUMERIC#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新购买POS机订单-->
+    <update id="update" parameterClass="ape_orders">
+        <![CDATA[ update ape_orders ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.user_id">
+                <![CDATA[ user_id=#user_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.order_no">
+                <![CDATA[ order_no=#order_no:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.order_amount">
+                <![CDATA[ order_amount=#order_amount:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.state">
+                <![CDATA[ state=#state:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.create_time">
+                <![CDATA[ create_time=#create_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.pay_time">
+                <![CDATA[ pay_time=#pay_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.pay_way">
+                <![CDATA[ pay_way=#pay_way:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.goods_id">
+                <![CDATA[ goods_id=#goods_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.goods_name">
+                <![CDATA[ goods_name=#goods_name:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.goods_price">
+                <![CDATA[ goods_price=#goods_price:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.goods_image">
+                <![CDATA[ goods_image=#goods_image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.total_count">
+                <![CDATA[ total_count=#total_count:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.send_count">
+                <![CDATA[ send_count=#send_count:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.surplus_count">
+                <![CDATA[ surplus_count=#surplus_count:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.return_count">
+                <![CDATA[ return_count=#return_count:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.return_explain">
+                <![CDATA[ return_explain=#return_explain:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.return_result">
+                <![CDATA[ return_result=#return_result:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.return_money">
+                <![CDATA[ return_money=#return_money:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.return_way">
+                <![CDATA[ return_way=#return_way:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.manager_id">
+                <![CDATA[ manager_id=#manager_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除购买POS机订单-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_orders where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>

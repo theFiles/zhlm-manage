@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+省份信息表
+User: Created by auto build
+Date: 2018-05-28 17:05:06
+-->
+<sqlMap namespace="common_provinces">
+
+    <typeAlias alias="common_provinces" type="com.rogrand.common.domain.Provinces" />
+
+    <!--省份信息表分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id最小值-->
+            <isNotEmpty prepend="and" property="id_min">
+                <![CDATA[ t1.id >= #id_min# ]]>
+            </isNotEmpty>
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--id最大值-->
+            <isNotEmpty prepend="and" property="id_max">
+                <![CDATA[ t1.id <= #id_max# ]]>
+            </isNotEmpty>
+            <!--provinceid-->
+            <isNotEmpty prepend="and" property="provinceid">
+                <![CDATA[ instr(t1.provinceid, #provinceid#) > 0 ]]>
+            </isNotEmpty>
+            <!--province-->
+            <isNotEmpty prepend="and" property="province">
+                <![CDATA[ instr(t1.province, #province#) > 0 ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--省份信息表分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from common_provinces t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--省份信息表分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="common_provinces">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.provinceid,
+                t1.province
+            from common_provinces t1
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建省份信息表-->
+    <insert id="create" parameterClass="common_provinces">
+        <![CDATA[
+            insert into common_provinces(
+                provinceid,
+                province
+            ) values (
+                #provinceid:VARCHAR#,
+                #province:VARCHAR#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建省份信息表-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into common_provinces(
+                provinceid,
+                province
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].provinceid:VARCHAR#,
+                    #[].province:VARCHAR#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新省份信息表-->
+    <update id="update" parameterClass="common_provinces">
+        <![CDATA[ update common_provinces ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.provinceid">
+                <![CDATA[ provinceid=#provinceid:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.province">
+                <![CDATA[ province=#province:VARCHAR# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除省份信息表-->
+    <delete id="delete" parameterClass="common_provinces">
+        <![CDATA[
+            delete from common_provinces where id = #id#
+        ]]>
+    </delete>
+
+</sqlMap>

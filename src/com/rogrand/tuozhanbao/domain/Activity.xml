@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+活动
+User: Created by auto build
+Date: 2018-09-22 16:03:55
+-->
+<sqlMap namespace="ape_activity">
+
+    <typeAlias alias="ape_activity" type="com.rogrand.tuozhanbao.domain.Activity" />
+
+    <!--活动分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--分类-->
+            <isNotEmpty prepend="and" property="classify">
+                <![CDATA[ instr(t1.classify, #classify#) > 0 ]]>
+            </isNotEmpty>
+            <!--标题-->
+            <isNotEmpty prepend="and" property="title">
+                <![CDATA[ instr(t1.title, #title#) > 0 ]]>
+            </isNotEmpty>
+            <!--介绍-->
+            <isNotEmpty prepend="and" property="introduce">
+                <![CDATA[ instr(t1.introduce, #introduce#) > 0 ]]>
+            </isNotEmpty>
+            <!--主图片-->
+            <isNotEmpty prepend="and" property="image">
+                <![CDATA[ instr(t1.image, #image#) > 0 ]]>
+            </isNotEmpty>
+            <!--跳转链接-->
+            <isNotEmpty prepend="and" property="link_url">
+                <![CDATA[ instr(t1.link_url, #link_url#) > 0 ]]>
+            </isNotEmpty>
+            <!--开始时间开始-->
+            <isNotEmpty prepend="and" property="start_time_begin">
+                <![CDATA[ t1.start_time >= str_to_date(#start_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--开始时间结束-->
+            <isNotEmpty prepend="and" property="start_time_end">
+                <![CDATA[ t1.start_time <= str_to_date('$start_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--结束时间开始-->
+            <isNotEmpty prepend="and" property="end_time_begin">
+                <![CDATA[ t1.end_time >= str_to_date(#end_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--结束时间结束-->
+            <isNotEmpty prepend="and" property="end_time_end">
+                <![CDATA[ t1.end_time <= str_to_date('$end_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--排序值最小值-->
+            <isNotEmpty prepend="and" property="order_no_min">
+                <![CDATA[ t1.order_no >= #order_no_min# ]]>
+            </isNotEmpty>
+            <!--排序值等于-->
+            <isNotEmpty prepend="and" property="order_no">
+                <![CDATA[ t1.order_no = #order_no# ]]>
+            </isNotEmpty>
+            <!--排序值最大值-->
+            <isNotEmpty prepend="and" property="order_no_max">
+                <![CDATA[ t1.order_no <= #order_no_max# ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--活动分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_activity t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--活动分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_activity">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.classify,
+                t1.title,
+                t1.introduce,
+                t1.image,
+                t1.content,
+                t1.link_url,
+                t1.start_time,
+                t1.end_time,
+                t1.order_no
+            from ape_activity t1
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建活动-->
+    <insert id="create" parameterClass="ape_activity">
+        <![CDATA[
+            insert into ape_activity(
+                classify,
+                title,
+                introduce,
+                image,
+                content,
+                link_url,
+                start_time,
+                end_time,
+                order_no
+            ) values (
+                #classify:VARCHAR#,
+                #title:VARCHAR#,
+                #introduce:VARCHAR#,
+                #image:VARCHAR#,
+                #content:TEXT#,
+                #link_url:VARCHAR#,
+                #start_time:TIMESTAMP#,
+                #end_time:TIMESTAMP#,
+                #order_no:NUMERIC#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建活动-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_activity(
+                classify,
+                title,
+                introduce,
+                image,
+                content,
+                link_url,
+                start_time,
+                end_time,
+                order_no
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].classify:VARCHAR#,
+                    #[].title:VARCHAR#,
+                    #[].introduce:VARCHAR#,
+                    #[].image:VARCHAR#,
+                    #[].content:TEXT#,
+                    #[].link_url:VARCHAR#,
+                    #[].start_time:TIMESTAMP#,
+                    #[].end_time:TIMESTAMP#,
+                    #[].order_no:NUMERIC#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新活动-->
+    <update id="update" parameterClass="ape_activity">
+        <![CDATA[ update ape_activity ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.classify">
+                <![CDATA[ classify=#classify:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.title">
+                <![CDATA[ title=#title:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.introduce">
+                <![CDATA[ introduce=#introduce:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.image">
+                <![CDATA[ image=#image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.content">
+                <![CDATA[ content=#content:TEXT# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.link_url">
+                <![CDATA[ link_url=#link_url:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.start_time">
+                <![CDATA[ start_time=#start_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.end_time">
+                <![CDATA[ end_time=#end_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.order_no">
+                <![CDATA[ order_no=#order_no:NUMERIC# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除活动-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_activity where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>

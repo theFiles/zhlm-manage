@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+消息表
+User: Created by auto build
+Date: 2018-09-22 16:03:55
+-->
+<sqlMap namespace="ape_message">
+
+    <typeAlias alias="ape_message" type="com.rogrand.tuozhanbao.domain.Message" />
+
+    <!--消息表分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--用户id最小值-->
+            <isNotEmpty prepend="and" property="user_id_min">
+                <![CDATA[ t1.user_id >= #user_id_min# ]]>
+            </isNotEmpty>
+            <!--用户id等于-->
+            <isNotEmpty prepend="and" property="user_id">
+                <![CDATA[ t1.user_id = #user_id# ]]>
+            </isNotEmpty>
+            <!--用户id最大值-->
+            <isNotEmpty prepend="and" property="user_id_max">
+                <![CDATA[ t1.user_id <= #user_id_max# ]]>
+            </isNotEmpty>
+            <!--消息类型-->
+            <isNotEmpty prepend="and" property="type">
+                <![CDATA[ instr(t1.type, #type#) > 0 ]]>
+            </isNotEmpty>
+            <!--标题-->
+            <isNotEmpty prepend="and" property="title">
+                <![CDATA[ instr(t1.title, #title#) > 0 ]]>
+            </isNotEmpty>
+            <!--消息内容-->
+            <isNotEmpty prepend="and" property="context">
+                <![CDATA[ instr(t1.context, #context#) > 0 ]]>
+            </isNotEmpty>
+            <!--推送url路径-->
+            <isNotEmpty prepend="and" property="link">
+                <![CDATA[ instr(t1.link, #link#) > 0 ]]>
+            </isNotEmpty>
+            <!--是否已读-->
+            <isNotEmpty prepend="and" property="is_read">
+                <![CDATA[ instr(t1.is_read, #is_read#) > 0 ]]>
+            </isNotEmpty>
+            <!--创建时间开始-->
+            <isNotEmpty prepend="and" property="create_time_begin">
+                <![CDATA[ t1.create_time >= str_to_date(#create_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--创建时间结束-->
+            <isNotEmpty prepend="and" property="create_time_end">
+                <![CDATA[ t1.create_time <= str_to_date('$create_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--消息表分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_message t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--消息表分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_message">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.user_id,
+                t2.real_name user_id_display,
+                t1.type,
+                t1.title,
+                t1.context,
+                t1.link,
+                t1.is_read,
+                t1.create_time
+            from ape_message t1
+            left join ape_user_info t2 on t1.user_id = t2.id
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建消息表-->
+    <insert id="create" parameterClass="ape_message">
+        <![CDATA[
+            insert into ape_message(
+                user_id,
+                type,
+                title,
+                context,
+                link,
+                is_read,
+                create_time
+            ) values (
+                #user_id:NUMERIC#,
+                #type:VARCHAR#,
+                #title:VARCHAR#,
+                #context:VARCHAR#,
+                #link:VARCHAR#,
+                #is_read:VARCHAR#,
+                #create_time:TIMESTAMP#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建消息表-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_message(
+                user_id,
+                type,
+                title,
+                context,
+                link,
+                is_read,
+                create_time
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].user_id:NUMERIC#,
+                    #[].type:VARCHAR#,
+                    #[].title:VARCHAR#,
+                    #[].context:VARCHAR#,
+                    #[].link:VARCHAR#,
+                    #[].is_read:VARCHAR#,
+                    #[].create_time:TIMESTAMP#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新消息表-->
+    <update id="update" parameterClass="ape_message">
+        <![CDATA[ update ape_message ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.user_id">
+                <![CDATA[ user_id=#user_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.type">
+                <![CDATA[ type=#type:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.title">
+                <![CDATA[ title=#title:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.context">
+                <![CDATA[ context=#context:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.link">
+                <![CDATA[ link=#link:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.is_read">
+                <![CDATA[ is_read=#is_read:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.create_time">
+                <![CDATA[ create_time=#create_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除消息表-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_message where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>

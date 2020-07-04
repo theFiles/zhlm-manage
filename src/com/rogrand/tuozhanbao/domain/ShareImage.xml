@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+分享图片
+User: Created by auto build
+Date: 2018-11-09 10:37:35
+-->
+<sqlMap namespace="ape_share_image">
+
+    <typeAlias alias="ape_share_image" type="com.rogrand.tuozhanbao.domain.ShareImage" />
+
+    <!--分享图片分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--主图片-->
+            <isNotEmpty prepend="and" property="image">
+                <![CDATA[ instr(t1.image, #image#) > 0 ]]>
+            </isNotEmpty>
+            <!--排序值最小值-->
+            <isNotEmpty prepend="and" property="order_no_min">
+                <![CDATA[ t1.order_no >= #order_no_min# ]]>
+            </isNotEmpty>
+            <!--排序值等于-->
+            <isNotEmpty prepend="and" property="order_no">
+                <![CDATA[ t1.order_no = #order_no# ]]>
+            </isNotEmpty>
+            <!--排序值最大值-->
+            <isNotEmpty prepend="and" property="order_no_max">
+                <![CDATA[ t1.order_no <= #order_no_max# ]]>
+            </isNotEmpty>
+            <!--备注-->
+            <isNotEmpty prepend="and" property="comment">
+                <![CDATA[ instr(t1.comment, #comment#) > 0 ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--分享图片分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_share_image t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--分享图片分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_share_image">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.image,
+                t1.order_no,
+                t1.comment
+            from ape_share_image t1
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建分享图片-->
+    <insert id="create" parameterClass="ape_share_image">
+        <![CDATA[
+            insert into ape_share_image(
+                image,
+                order_no,
+                comment
+            ) values (
+                #image:VARCHAR#,
+                #order_no:NUMERIC#,
+                #comment:VARCHAR#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建分享图片-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_share_image(
+                image,
+                order_no,
+                comment
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].image:VARCHAR#,
+                    #[].order_no:NUMERIC#,
+                    #[].comment:VARCHAR#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新分享图片-->
+    <update id="update" parameterClass="ape_share_image">
+        <![CDATA[ update ape_share_image ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.image">
+                <![CDATA[ image=#image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.order_no">
+                <![CDATA[ order_no=#order_no:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.comment">
+                <![CDATA[ comment=#comment:VARCHAR# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除分享图片-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_share_image where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>

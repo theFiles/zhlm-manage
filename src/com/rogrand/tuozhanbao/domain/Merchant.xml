@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+商家
+User: Created by auto build
+Date: 2018-12-27 01:11:57
+-->
+<sqlMap namespace="ape_merchant">
+
+    <typeAlias alias="ape_merchant" type="com.rogrand.tuozhanbao.domain.Merchant" />
+
+    <!--商家分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--用户最小值-->
+            <isNotEmpty prepend="and" property="user_id_min">
+                <![CDATA[ t1.user_id >= #user_id_min# ]]>
+            </isNotEmpty>
+            <!--用户等于-->
+            <isNotEmpty prepend="and" property="user_id">
+                <![CDATA[ t1.user_id = #user_id# ]]>
+            </isNotEmpty>
+            <isNotEmpty prepend="and" property="user_id_display">
+                <![CDATA[ instr(t2.phone, #user_id_display#) > 0 ]]>
+            </isNotEmpty>
+            <!--用户最大值-->
+            <isNotEmpty prepend="and" property="user_id_max">
+                <![CDATA[ t1.user_id <= #user_id_max# ]]>
+            </isNotEmpty>
+            <!--姓名-->
+            <isNotEmpty prepend="and" property="name">
+                <![CDATA[ instr(t1.name, #name#) > 0 ]]>
+            </isNotEmpty>
+            <!--手机号码-->
+            <isNotEmpty prepend="and" property="phone">
+                <![CDATA[ instr(t1.phone, #phone#) > 0 ]]>
+            </isNotEmpty>
+            <!--头像-->
+            <isNotEmpty prepend="and" property="image">
+                <![CDATA[ instr(t1.image, #image#) > 0 ]]>
+            </isNotEmpty>
+            <!--sn-->
+            <isNotEmpty prepend="and" property="sn">
+                <![CDATA[ instr(t1.sn, #sn#) > 0 ]]>
+            </isNotEmpty>
+            <!--厂商-->
+            <isNotEmpty prepend="and" property="manufacturer">
+                <![CDATA[ instr(t1.manufacturer, #manufacturer#) > 0 ]]>
+            </isNotEmpty>
+            <!--创建时间开始-->
+            <isNotEmpty prepend="and" property="create_time_begin">
+                <![CDATA[ t1.create_time >= str_to_date(#create_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--创建时间结束-->
+            <isNotEmpty prepend="and" property="create_time_end">
+                <![CDATA[ t1.create_time <= str_to_date('$create_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--型号-->
+            <isNotEmpty prepend="and" property="model">
+                <![CDATA[ instr(t1.model, #model#) > 0 ]]>
+            </isNotEmpty>
+            <!--状态-->
+            <isNotEmpty prepend="and" property="state">
+                <![CDATA[ instr(t1.state, #state#) > 0 ]]>
+            </isNotEmpty>
+            <!--类型：0订单、1奖励、2手动添加-->
+            <isNotEmpty prepend="and" property="type">
+                <![CDATA[ instr(t1.type, #type#) > 0 ]]>
+            </isNotEmpty>
+            <!--分拨记录-->
+            <isNotEmpty prepend="and" property="record">
+                <![CDATA[ instr(t1.record, #record#) > 0 ]]>
+            </isNotEmpty>
+            <!--订单id最小值-->
+            <isNotEmpty prepend="and" property="order_id_min">
+                <![CDATA[ t1.order_id >= #order_id_min# ]]>
+            </isNotEmpty>
+            <!--订单id等于-->
+            <isNotEmpty prepend="and" property="order_id">
+                <![CDATA[ t1.order_id = #order_id# ]]>
+            </isNotEmpty>
+            <!--订单id最大值-->
+            <isNotEmpty prepend="and" property="order_id_max">
+                <![CDATA[ t1.order_id <= #order_id_max# ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--商家分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_merchant t1
+            left join ape_user_info t2 on t1.user_id = t2.id
+            left join ape_orders t3 on t1.order_id = t3.id
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--商家分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_merchant">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.user_id,
+                t2.phone user_id_display,
+                t1.name,
+                t1.phone,
+                t1.image,
+                t1.sn,
+                t1.manufacturer,
+                t1.create_time,
+                t1.model,
+                t1.state,
+                t1.type,
+                t1.record,
+                t1.order_id,
+                t3.order_no order_id_display
+            from ape_merchant t1
+            left join ape_user_info t2 on t1.user_id = t2.id
+            left join ape_orders t3 on t1.order_id = t3.id
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建商家-->
+    <insert id="create" parameterClass="ape_merchant">
+        <![CDATA[
+            insert into ape_merchant(
+                user_id,
+                name,
+                phone,
+                image,
+                sn,
+                manufacturer,
+                create_time,
+                model,
+                state,
+                type,
+                record,
+                order_id
+            ) values (
+                #user_id:NUMERIC#,
+                #name:VARCHAR#,
+                #phone:VARCHAR#,
+                #image:VARCHAR#,
+                #sn:VARCHAR#,
+                #manufacturer:VARCHAR#,
+                #create_time:TIMESTAMP#,
+                #model:VARCHAR#,
+                #state:VARCHAR#,
+                #type:VARCHAR#,
+                #record:VARCHAR#,
+                #order_id:NUMERIC#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建商家-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_merchant(
+                user_id,
+                name,
+                phone,
+                image,
+                sn,
+                manufacturer,
+                create_time,
+                model,
+                state,
+                type,
+                record,
+                order_id
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].user_id:NUMERIC#,
+                    #[].name:VARCHAR#,
+                    #[].phone:VARCHAR#,
+                    #[].image:VARCHAR#,
+                    #[].sn:VARCHAR#,
+                    #[].manufacturer:VARCHAR#,
+                    #[].create_time:TIMESTAMP#,
+                    #[].model:VARCHAR#,
+                    #[].state:VARCHAR#,
+                    #[].type:VARCHAR#,
+                    #[].record:VARCHAR#,
+                    #[].order_id:NUMERIC#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新商家-->
+    <update id="update" parameterClass="ape_merchant">
+        <![CDATA[ update ape_merchant ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.user_id">
+                <![CDATA[ user_id=#user_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.name">
+                <![CDATA[ name=#name:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.phone">
+                <![CDATA[ phone=#phone:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.image">
+                <![CDATA[ image=#image:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.sn">
+                <![CDATA[ sn=#sn:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.manufacturer">
+                <![CDATA[ manufacturer=#manufacturer:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.create_time">
+                <![CDATA[ create_time=#create_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.model">
+                <![CDATA[ model=#model:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.state">
+                <![CDATA[ state=#state:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.type">
+                <![CDATA[ type=#type:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.record">
+                <![CDATA[ record=#record:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.order_id">
+                <![CDATA[ order_id=#order_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除商家-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_merchant where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>

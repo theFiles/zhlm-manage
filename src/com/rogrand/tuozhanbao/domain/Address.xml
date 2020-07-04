@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//iBATIS.com//DTD SQL Map 2.0//EN" "http://www.ibatis.com/dtd/sql-map-2.dtd">
+<!--
+收货地址
+User: Created by auto build
+Date: 2018-09-22 13:41:02
+-->
+<sqlMap namespace="ape_address">
+
+    <typeAlias alias="ape_address" type="com.rogrand.tuozhanbao.domain.Address" />
+
+    <!--收货地址分页条件-->
+    <sql id="pageWhere">
+        <dynamic prepend="where">
+            <!--id等于-->
+            <isNotEmpty prepend="and" property="id">
+                <![CDATA[ t1.id = #id# ]]>
+            </isNotEmpty>
+            <!--用户id等于-->
+            <isNotEmpty prepend="and" property="user_id">
+                <![CDATA[ t1.user_id = #user_id# ]]>
+            </isNotEmpty>
+            <!--用户id_name-->
+            <isNotEmpty prepend="and" property="user_id_display">
+                <![CDATA[ instr(t1.id, #user_id_display#) > 0 ]]>
+            </isNotEmpty>
+            <!--联系人-->
+            <isNotEmpty prepend="and" property="name">
+                <![CDATA[ instr(t1.name, #name#) > 0 ]]>
+            </isNotEmpty>
+            <!--联系电话-->
+            <isNotEmpty prepend="and" property="phone">
+                <![CDATA[ instr(t1.phone, #phone#) > 0 ]]>
+            </isNotEmpty>
+            <!--省份-->
+            <isNotEmpty prepend="and" property="province">
+                <![CDATA[ instr(t1.province, #province#) > 0 ]]>
+            </isNotEmpty>
+            <!--城市-->
+            <isNotEmpty prepend="and" property="city">
+                <![CDATA[ instr(t1.city, #city#) > 0 ]]>
+            </isNotEmpty>
+            <!--区-->
+            <isNotEmpty prepend="and" property="area">
+                <![CDATA[ instr(t1.area, #area#) > 0 ]]>
+            </isNotEmpty>
+            <!--详细地址-->
+            <isNotEmpty prepend="and" property="address">
+                <![CDATA[ instr(t1.address, #address#) > 0 ]]>
+            </isNotEmpty>
+            <!--是否默认-->
+            <isNotEmpty prepend="and" property="is_default">
+                <![CDATA[ instr(t1.is_default, #is_default#) > 0 ]]>
+            </isNotEmpty>
+            <!--标签-->
+            <isNotEmpty prepend="and" property="label">
+                <![CDATA[ instr(t1.label, #label#) > 0 ]]>
+            </isNotEmpty>
+            <!--创建时间开始-->
+            <isNotEmpty prepend="and" property="create_time_begin">
+                <![CDATA[ t1.create_time >= str_to_date(#create_time_begin#,'%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!--创建时间结束-->
+            <isNotEmpty prepend="and" property="create_time_end">
+                <![CDATA[ t1.create_time <= str_to_date('$create_time_end$ 23:59:59','%Y-%m-%d %T') ]]>
+            </isNotEmpty>
+            <!-- 用于数据导出 -->
+            <isNotEmpty prepend="and" property="exportIds">
+                <![CDATA[ t1.id in ($exportIds$) ]]>
+            </isNotEmpty>
+        </dynamic>
+    </sql>
+
+    <!--收货地址分页记录数-->
+    <select id="pageCount" parameterClass="PageParam" resultClass="Long">
+        <![CDATA[
+            select count(*) total from ape_address t1
+        ]]>
+        <include refid="pageWhere"/>
+    </select>
+
+    <!--收货地址分页记录集-->
+    <select id="pageList" parameterClass="PageParam" resultClass="ape_address">
+        <![CDATA[ $head$ ]]>
+        <![CDATA[
+            select
+                t1.id,
+                t1.user_id,
+                t1.id user_id_display,
+                t1.name,
+                t1.phone,
+                t1.province,
+                t1.city,
+                t1.area,
+                t1.address,
+                t1.is_default,
+                t1.label,
+                t1.create_time
+            from ape_address t1
+            left join ape_user_info t1 on t1.user_id = t1.id
+        ]]>
+        <include refid="pageWhere"/>
+        <![CDATA[ $sortOrder$ ]]>
+        <![CDATA[ $foot$ ]]>
+    </select>
+
+    <!--创建收货地址-->
+    <insert id="create" parameterClass="ape_address">
+        <![CDATA[
+            insert into ape_address(
+                user_id,
+                name,
+                phone,
+                province,
+                city,
+                area,
+                address,
+                is_default,
+                label,
+                create_time
+            ) values (
+                #user_id:NUMERIC#,
+                #name:VARCHAR#,
+                #phone:VARCHAR#,
+                #province:VARCHAR#,
+                #city:VARCHAR#,
+                #area:VARCHAR#,
+                #address:VARCHAR#,
+                #is_default:VARCHAR#,
+                #label:VARCHAR#,
+                #create_time:TIMESTAMP#
+            )
+        ]]>
+        <!--
+        <selectKey keyProperty="id" resultClass="String" type="pre">
+            <include refid="common.pkSql"/>
+        </selectKey>
+        -->
+        <selectKey resultClass="int" >
+            select last_insert_id() as id
+        </selectKey>
+    </insert>
+    
+    <!--批量创建收货地址-->
+    <insert id="createBatch" parameterClass="java.util.List">
+        <![CDATA[
+            insert into ape_address(
+                user_id,
+                name,
+                phone,
+                province,
+                city,
+                area,
+                address,
+                is_default,
+                label,
+                create_time
+            ) values
+        ]]>
+        <iterate  conjunction =",">
+            <![CDATA[  
+                (
+                    #[].user_id:NUMERIC#,
+                    #[].name:VARCHAR#,
+                    #[].phone:VARCHAR#,
+                    #[].province:VARCHAR#,
+                    #[].city:VARCHAR#,
+                    #[].area:VARCHAR#,
+                    #[].address:VARCHAR#,
+                    #[].is_default:VARCHAR#,
+                    #[].label:VARCHAR#,
+                    #[].create_time:TIMESTAMP#
+                )
+            ]]>   
+        </iterate>
+    </insert>
+
+    <!--更新收货地址-->
+    <update id="update" parameterClass="ape_address">
+        <![CDATA[ update ape_address ]]>
+        <dynamic prepend="set">
+            <isPropertyAvailable prepend="," property="fields.user_id">
+                <![CDATA[ user_id=#user_id:NUMERIC# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.name">
+                <![CDATA[ name=#name:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.phone">
+                <![CDATA[ phone=#phone:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.province">
+                <![CDATA[ province=#province:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.city">
+                <![CDATA[ city=#city:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.area">
+                <![CDATA[ area=#area:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.address">
+                <![CDATA[ address=#address:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.is_default">
+                <![CDATA[ is_default=#is_default:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.label">
+                <![CDATA[ label=#label:VARCHAR# ]]>
+            </isPropertyAvailable>
+            <isPropertyAvailable prepend="," property="fields.create_time">
+                <![CDATA[ create_time=#create_time:TIMESTAMP# ]]>
+            </isPropertyAvailable>
+        </dynamic>
+        <![CDATA[ where id = #id#  ]]>
+    </update>
+
+    <!--删除收货地址-->
+    <delete id="delete">
+        <![CDATA[
+            delete from ape_address where id in
+        ]]>
+        <iterate  conjunction ="," open="(" close=")">
+            #[]#
+        </iterate>
+    </delete>
+
+</sqlMap>
